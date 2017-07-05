@@ -1,0 +1,8 @@
+
+** mybatis 分页
+
+  基于 mybatis 的 redis 缓存
+
+** 使用
+
+  在 xml 中添加 <cache type="com.github.mte.caches.RedisCache" /> 即可
