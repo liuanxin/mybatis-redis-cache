@@ -1,4 +1,4 @@
-package com.github.mte.caches;
+package com.github.liuanxin.caches;
 
 import org.apache.ibatis.cache.Cache;
 import org.slf4j.Logger;
