@@ -1,8 +1,12 @@
 
-** mybatis 分页
+** mybatis redis 缓存
 
   基于 mybatis 的 redis 缓存
 
 ** 使用
 
   在 xml 中添加 <cache type="com.github.mte.caches.RedisCache" /> 即可
+
+** 说明
+
+  实体使用的是 Java 的序列化, 实体类要 implements Serializable 才可以.
