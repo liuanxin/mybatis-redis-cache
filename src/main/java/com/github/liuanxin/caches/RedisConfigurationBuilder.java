@@ -14,7 +14,7 @@ import java.util.Properties;
 
 final class RedisConfigurationBuilder {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(RedisConfigurationBuilder.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RedisConfigurationBuilder.class);
 
     private static final String SPRING_FILE_NAME;
     static {
@@ -26,37 +26,35 @@ final class RedisConfigurationBuilder {
 	private static final String SPRING_REDIS_CONFIG = "redis";
 	private static final String SPRING_ADD_REDIS_CONFIG = SPRING_CONFIG + "." + SPRING_REDIS_CONFIG;
 
-	private static RedisConfig DEFAULT_REDIS = null;
-	public static RedisConfig config(Class clazz) {
-		if (DEFAULT_REDIS != null) return DEFAULT_REDIS;
-
+    public static final RedisConfig CONFIG = config();
+	private static RedisConfig config() {
 		// load application.yml
         String ymlFileName = SPRING_FILE_NAME + ".yml";
-        Map<String, Object> configParam = loadYml(clazz, ymlFileName);
-        DEFAULT_REDIS = setConfigProperties(configParam);
-        if (isNotBlank(DEFAULT_REDIS)) {
-            return DEFAULT_REDIS;
+        Map<String, Object> configParam = loadYml(ymlFileName);
+        RedisConfig redisConfig = setConfigProperties(configParam);
+        if (isNotBlank(redisConfig)) {
+            return redisConfig;
         }
 
         // load application.properties
         String propertyFileName = SPRING_FILE_NAME + ".properties";
-        configParam = loadSpringBootProperties(clazz, propertyFileName);
-        DEFAULT_REDIS = setConfigProperties(configParam);
-        if (isNotBlank(DEFAULT_REDIS)) {
-            return DEFAULT_REDIS;
+        configParam = loadSpringBootProperties(propertyFileName);
+        redisConfig = setConfigProperties(configParam);
+        if (isNotBlank(redisConfig)) {
+            return redisConfig;
         }
 
         // load redis.properties
         String redisFileName = "redis.properties";
-        configParam = loadProperties(clazz, redisFileName);
-        DEFAULT_REDIS = setConfigProperties(configParam);
-        if (isNotBlank(DEFAULT_REDIS)) {
-            return DEFAULT_REDIS;
+        configParam = loadProperties(redisFileName);
+        redisConfig = setConfigProperties(configParam);
+        if (isNotBlank(redisConfig)) {
+            return redisConfig;
         }
 
 		// if no config, use default
-        DEFAULT_REDIS = new RedisConfig();
-		return DEFAULT_REDIS;
+        redisConfig = new RedisConfig();
+		return redisConfig;
 	}
 
     private static boolean isBlank(Object obj) {
@@ -70,8 +68,8 @@ final class RedisConfigurationBuilder {
     }
 
 	@SuppressWarnings("unchecked")
-	private static Map<String, Object> loadYml(Class clazz, String ymlFileName) {
-		try (InputStream input = clazz.getClassLoader().getResourceAsStream(ymlFileName)) {
+	private static Map<String, Object> loadYml(String ymlFileName) {
+		try (InputStream input = loadFile(ymlFileName)) {
 			if (input != null) {
                 Map<String, Object> configMap = (Map<String, Object>) new Yaml().load(input);
                 if (isEmpty(configMap)) return null;
@@ -103,8 +101,8 @@ final class RedisConfigurationBuilder {
 		}
 		return null;
 	}
-    private static Map<String, Object> loadSpringBootProperties(Class clazz, String propertyFileName) {
-        try (InputStream input = clazz.getClassLoader().getResourceAsStream(propertyFileName)) {
+    private static Map<String, Object> loadSpringBootProperties(String propertyFileName) {
+        try (InputStream input = loadFile(propertyFileName)) {
             if (input != null) {
                 Properties config = new Properties();
                 config.load(input);
@@ -170,8 +168,8 @@ final class RedisConfigurationBuilder {
 		return redisConfig;
 	}
 
-    private static Map<String, Object> loadProperties(Class clazz, String propertyFileName) {
-        try (InputStream input = clazz.getClassLoader().getResourceAsStream(propertyFileName)) {
+    private static Map<String, Object> loadProperties(String propertyFileName) {
+        try (InputStream input = loadFile(propertyFileName)) {
             if (input != null) {
                 Properties config = new Properties();
                 config.load(input);
@@ -191,5 +189,8 @@ final class RedisConfigurationBuilder {
             }
         }
         return null;
+    }
+    private static InputStream loadFile(String file) {
+	    return RedisConfigurationBuilder.class.getClassLoader().getResourceAsStream(file);
     }
 }
