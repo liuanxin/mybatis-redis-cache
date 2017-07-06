@@ -7,18 +7,18 @@ public class RedisConfig extends JedisPoolConfig {
 
 	private String host = Protocol.DEFAULT_HOST;
 	private int port = Protocol.DEFAULT_PORT;
-	private int connectionTimeout = Protocol.DEFAULT_TIMEOUT;
-	private int soTimeout = Protocol.DEFAULT_TIMEOUT;
 	private String password;
 	private int database = Protocol.DEFAULT_DATABASE;
 	private String clientName;
+	private int connectionTimeout = Protocol.DEFAULT_TIMEOUT;
+	private int soTimeout = Protocol.DEFAULT_TIMEOUT;
 
 
 	public String getHost() {
 		return host;
 	}
 	public void setHost(String host) {
-		if (host == null || "".equals(host)) {
+		if (host == null || "".equals(host.trim())) {
 			host = Protocol.DEFAULT_HOST;
 		}
 		this.host = host;
@@ -35,7 +35,7 @@ public class RedisConfig extends JedisPoolConfig {
 		return password;
 	}
 	public void setPassword(String password) {
-		if (password == null || "".equals(password)) {
+		if (password == null || "".equals(password.trim())) {
 			password = null;
 		}
 		this.password = password;
@@ -52,7 +52,7 @@ public class RedisConfig extends JedisPoolConfig {
 		return clientName;
 	}
 	public void setClientName(String clientName) {
-		if (clientName == null || "".equals(clientName)) {
+		if (clientName == null || "".equals(clientName.trim())) {
 			clientName = null;
 		}
 		this.clientName = clientName;
