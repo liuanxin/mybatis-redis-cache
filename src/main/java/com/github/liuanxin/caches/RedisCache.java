@@ -1,5 +1,6 @@
 package com.github.liuanxin.caches;
 
+
 import org.apache.ibatis.cache.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,18 +25,13 @@ public final class RedisCache implements Cache {
         }
         this.id = id;
 
-        RedisConfig redisConfig = RedisConfigurationBuilder.config(getClass());
+        RedisConfig redisConfig = RedisConfigurationBuilder.CONFIG;
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("redis host ({}), port({}), pass({})", redisConfig.getHost(),
                     redisConfig.getPort(), redisConfig.getPassword());
         }
-        if (redisConfig.getPassword() == null || redisConfig.getPassword().trim().length() == 0) {
-            pool = new JedisPool(redisConfig, redisConfig.getHost(), redisConfig.getPort(),
-                    redisConfig.getConnectionTimeout());
-        } else {
-            pool = new JedisPool(redisConfig, redisConfig.getHost(), redisConfig.getPort(),
-                    redisConfig.getConnectionTimeout(), redisConfig.getPassword());
-        }
+        pool = new JedisPool(redisConfig, redisConfig.getHost(), redisConfig.getPort(),
+                redisConfig.getConnectionTimeout(), redisConfig.getPassword());
     }
 
     @Override
