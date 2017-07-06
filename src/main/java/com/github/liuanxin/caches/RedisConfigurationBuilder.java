@@ -22,12 +22,12 @@ final class RedisConfigurationBuilder {
         SPRING_FILE_NAME = "application" + (isNotBlank(profile ) ? ("-" + profile) : "");
     }
 
-	private static final String SPRING_CONFIG = "spring";
-	private static final String SPRING_REDIS_CONFIG = "redis";
-	private static final String SPRING_ADD_REDIS_CONFIG = SPRING_CONFIG + "." + SPRING_REDIS_CONFIG;
+    private static final String SPRING_CONFIG = "spring";
+    private static final String SPRING_REDIS_CONFIG = "redis";
+    private static final String SPRING_ADD_REDIS_CONFIG = SPRING_CONFIG + "." + SPRING_REDIS_CONFIG;
 
     public static final RedisConfig CONFIG = config();
-	private static RedisConfig config() {
+    private static RedisConfig config() {
 		// load application.yml
         String ymlFileName = SPRING_FILE_NAME + ".yml";
         Map<String, Object> configParam = loadYml(ymlFileName);
