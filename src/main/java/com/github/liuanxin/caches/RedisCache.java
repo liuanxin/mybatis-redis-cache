@@ -47,8 +47,8 @@ public final class RedisCache implements Cache {
             if (LOGGER.isWarnEnabled()) {
                 LOGGER.warn("getSize exception", e);
             }
+            return 0;
         }
-        return 0;
     }
 
     @Override
@@ -70,8 +70,8 @@ public final class RedisCache implements Cache {
             if (LOGGER.isWarnEnabled()) {
                 LOGGER.warn("getObject exception", e);
             }
+            return null;
         }
-        return null;
     }
 
     @Override
@@ -82,8 +82,8 @@ public final class RedisCache implements Cache {
             if (LOGGER.isWarnEnabled()) {
                 LOGGER.warn("removeObject exception", e);
             }
+            return null;
         }
-        return null;
     }
 
     @Override
