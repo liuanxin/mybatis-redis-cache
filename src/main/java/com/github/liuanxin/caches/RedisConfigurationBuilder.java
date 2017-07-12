@@ -16,10 +16,10 @@ final class RedisConfigurationBuilder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RedisConfigurationBuilder.class);
 
-    private static final String SPRING_FILE_NAME;
+    private static final String PROFILE;
     static {
         String profile = System.getProperty("spring.profiles.active");
-        SPRING_FILE_NAME = "application" + (isNotBlank(profile ) ? ("-" + profile) : "");
+        PROFILE = isNotBlank(profile ) ? ("-" + profile) : "";
     }
 
     private static final String SPRING_CONFIG = "spring";
@@ -28,25 +28,24 @@ final class RedisConfigurationBuilder {
 
     public static final RedisConfig CONFIG = config();
     private static RedisConfig config() {
+        String fileName = "application" + PROFILE;
+
 		// load application.yml
-        String ymlFileName = SPRING_FILE_NAME + ".yml";
-        Map<String, Object> configParam = loadYml(ymlFileName);
+        Map<String, Object> configParam = loadYml(fileName + ".yml");
         RedisConfig redisConfig = setConfigProperties(configParam);
         if (isNotBlank(redisConfig)) {
             return redisConfig;
         }
 
         // load application.properties
-        String propertyFileName = SPRING_FILE_NAME + ".properties";
-        configParam = loadSpringBootProperties(propertyFileName);
+        configParam = loadSpringBootProperties(fileName + ".properties");
         redisConfig = setConfigProperties(configParam);
         if (isNotBlank(redisConfig)) {
             return redisConfig;
         }
 
         // load redis.properties
-        String redisFileName = "redis.properties";
-        configParam = loadProperties(redisFileName);
+        configParam = loadProperties("redis" + PROFILE + ".properties");
         redisConfig = setConfigProperties(configParam);
         if (isNotBlank(redisConfig)) {
             return redisConfig;
@@ -83,20 +82,20 @@ final class RedisConfigurationBuilder {
                 }
                 if (isNotBlank(config)) {
                     if (LOGGER.isDebugEnabled()) {
-                        LOGGER.debug("load yml file ({}) ({})", ymlFileName, config);
+                        LOGGER.debug("load file ({}) return ({})", ymlFileName, config);
                     }
                     return (Map<String, Object>) config;
                 } else {
                     Map<String, Object> configParam = configSpringBootParam(configMap);
                     if (LOGGER.isDebugEnabled()) {
-                        LOGGER.debug("one line one config, load yml file ({}) return ({})", ymlFileName, configParam);
+                        LOGGER.debug("one line one config, load file ({}) return ({})", ymlFileName, configParam);
                     }
                     return configParam;
                 }
 			}
 		} catch (Exception e) {
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug(String.format("can not load yml file : %s", ymlFileName), e);
+				LOGGER.debug(String.format("can not load file : %s", ymlFileName), e);
 			}
 		}
 		return null;
@@ -108,13 +107,13 @@ final class RedisConfigurationBuilder {
                 config.load(input);
                 Map<String, Object> configParam = configSpringBootParam(config);
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("load properties file ({}) return ({})", propertyFileName, configParam);
+                    LOGGER.debug("load file ({}) return ({})", propertyFileName, configParam);
                 }
                 return configParam;
             }
         } catch (Exception e) {
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug(String.format("can not load property file : %s", propertyFileName), e);
+                LOGGER.debug(String.format("can not load file : %s", propertyFileName), e);
             }
         }
         return null;
@@ -179,13 +178,13 @@ final class RedisConfigurationBuilder {
                     map.put(entry.getKey().toString(), entry.getValue());
                 }
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("load redis.properties file ({}) return ({})", propertyFileName, map);
+                    LOGGER.debug("load file ({}) return ({})", propertyFileName, map);
                 }
                 return map;
             }
         } catch (Exception e) {
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug(String.format("can not load redis.property file : %s", propertyFileName), e);
+                LOGGER.debug(String.format("can not load file : %s", propertyFileName), e);
             }
         }
         return null;

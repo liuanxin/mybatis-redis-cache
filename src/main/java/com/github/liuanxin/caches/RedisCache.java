@@ -26,10 +26,6 @@ public final class RedisCache implements Cache {
         this.id = id;
 
         RedisConfig redisConfig = RedisConfigurationBuilder.CONFIG;
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("redis host ({}), port({}), pass({})", redisConfig.getHost(),
-                    redisConfig.getPort(), redisConfig.getPassword());
-        }
         pool = new JedisPool(redisConfig, redisConfig.getHost(), redisConfig.getPort(),
                 redisConfig.getConnectionTimeout(), redisConfig.getPassword());
     }
