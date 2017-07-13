@@ -9,4 +9,4 @@
 
 ** 说明
 
-  实体使用的是 Java 的序列化, 实体类要 implements Serializable 才可以.
+  缓存放进 redis 时会先将实体序列化成 json 字符串, 序列化使用 Jackson, 没有使用 java 的 Serializable 并存字节数组!
