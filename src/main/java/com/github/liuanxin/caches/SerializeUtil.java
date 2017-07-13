@@ -5,7 +5,7 @@ import org.apache.ibatis.cache.CacheException;
 
 public final class SerializeUtil {
 
-	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     public static String jsonSerialize(Object obj) {
         if (obj == null) return null;
@@ -28,25 +28,25 @@ public final class SerializeUtil {
 
     /*
     public static byte[] serialize(Object obj) {
-		if (obj == null) return null;
+        if (obj == null) return null;
 
-		try {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			new ObjectOutputStream(baos).writeObject(obj);
-			return baos.toByteArray();
-		} catch (Exception e) {
-			throw new CacheException(e);
-		}
-	}
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            new ObjectOutputStream(baos).writeObject(obj);
+            return baos.toByteArray();
+        } catch (Exception e) {
+            throw new CacheException(e);
+        }
+    }
 
-	public static Object unSerialize(byte[] bytes) {
-		if (bytes == null) return null;
+    public static Object unSerialize(byte[] bytes) {
+        if (bytes == null) return null;
 
-		try {
-			return new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject();
-		} catch (Exception e) {
-			throw new CacheException(e);
-		}
-	}
-	*/
+        try {
+            return new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject();
+        } catch (Exception e) {
+            throw new CacheException(e);
+        }
+    }
+    */
 }
