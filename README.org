@@ -5,8 +5,24 @@
 
 ** 使用
 
-  在 xml 中添加 <cache type="com.github.liuanxin.caches.RedisCache" /> 即可
+#+BEGIN_SRC xml
+<dependency>
+    <groupId>com.github.liuanxin</groupId>
+    <artifactId>mybatis-redis-cache</artifactId>
+    <version>1.0.0</version>
+</dependency>
+#+END_SRC
+
+#+BEGIN_SRC xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xxx">
+    <cache type="com.github.liuanxin.caches.RedisCache" />
+
+    ......
+</mapper>
+#+END_SRC
 
 ** 说明
 
-  缓存放进 redis 时会先将实体序列化成 json 字符串, 序列化使用 Jackson, 没有使用 java 的 Serializable 并存字节数组!
+  缓存序列化使用 Jackson
