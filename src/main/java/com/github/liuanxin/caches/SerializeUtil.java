@@ -1,20 +1,38 @@
 package com.github.liuanxin.caches;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.ibatis.cache.CacheException;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 
 public final class SerializeUtil {
 
-	// private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-	public static byte[] serialize(Object object) {
+    public static String jsonSerialize(Object obj) {
+        if (obj == null) return null;
+
+        try {
+            return OBJECT_MAPPER.writeValueAsString(obj);
+        } catch (Exception e) {
+            throw new CacheException(e);
+        }
+    }
+    public static Object unSerializeJson(String value) {
+        if (value == null || value.length() == 0) return null;
+
+        try {
+            return OBJECT_MAPPER.readValue(value, Object.class);
+        } catch (Exception e) {
+            throw new CacheException(e);
+        }
+    }
+
+    /*
+    public static byte[] serialize(Object obj) {
+		if (obj == null) return null;
+
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			new ObjectOutputStream(baos).writeObject(object);
+			new ObjectOutputStream(baos).writeObject(obj);
 			return baos.toByteArray();
 		} catch (Exception e) {
 			throw new CacheException(e);
@@ -30,23 +48,5 @@ public final class SerializeUtil {
 			throw new CacheException(e);
 		}
 	}
-
-	/*
-	public static byte[] jsonSerialize(Object obj) {
-        try {
-            return OBJECT_MAPPER.writeValueAsBytes(obj);
-        } catch (JsonProcessingException e) {
-            throw new CacheException(e);
-        }
-    }
-    public static Object unserializeJson(byte[] value) {
-	    if (value == null || value.length == 0) return null;
-
-        try {
-            return OBJECT_MAPPER.readValue(value, Object.class);
-        } catch (IOException e) {
-            throw new CacheException(e);
-        }
-    }
 	*/
 }

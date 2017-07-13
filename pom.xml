@@ -30,7 +30,7 @@
         <jedis.version>2.9.0</jedis.version>
         <yaml.version>1.18</yaml.version>
         <slf4j.version>1.7.25</slf4j.version>
-        <!--<jackson.version>2.8.5</jackson.version>-->
+        <jackson.version>2.8.5</jackson.version>
     </properties>
 
     <dependencies>
@@ -60,13 +60,12 @@
             <scope>provided</scope>
         </dependency>
 
-        <!--
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson.version}</version>
+            <scope>provided</scope>
         </dependency>
-        -->
     </dependencies>
 
     <build>

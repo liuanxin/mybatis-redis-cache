@@ -49,43 +49,53 @@ public final class RedisCache implements Cache {
 
     @Override
     public void putObject(final Object key, final Object value) {
-        try (Jedis jedis = pool.getResource()) {
-            jedis.hset(id.getBytes(), key.toString().getBytes(), SerializeUtil.serialize(value));
-        } catch (Exception e) {
-            if (LOGGER.isWarnEnabled()) {
-                LOGGER.warn("putObject exception", e);
+        if (key != null && value != null) {
+            try (Jedis jedis = pool.getResource()) {
+                // jedis.hset(id.getBytes(), key.toString().getBytes(), SerializeUtil.serialize(value));
+                jedis.hset(id, key.toString(), SerializeUtil.jsonSerialize(value));
+            } catch (Exception e) {
+                if (LOGGER.isWarnEnabled()) {
+                    LOGGER.warn("putObject exception", e);
+                }
             }
         }
     }
 
     @Override
     public Object getObject(final Object key) {
-        try (Jedis jedis = pool.getResource()) {
-            return SerializeUtil.unSerialize(jedis.hget(id.getBytes(), key.toString().getBytes()));
-        } catch (Exception e) {
-            if (LOGGER.isWarnEnabled()) {
-                LOGGER.warn("getObject exception", e);
+        if (key != null) {
+            try (Jedis jedis = pool.getResource()) {
+                // return SerializeUtil.unSerialize(jedis.hget(id.getBytes(), key.toString().getBytes()));
+                return SerializeUtil.unSerializeJson(jedis.hget(id, key.toString()));
+            } catch (Exception e) {
+                if (LOGGER.isWarnEnabled()) {
+                    LOGGER.warn("getObject exception", e);
+                }
             }
-            return null;
         }
+        return null;
     }
 
     @Override
     public Object removeObject(final Object key) {
-        try (Jedis jedis = pool.getResource()) {
-            return jedis.hdel(id.getBytes(), key.toString().getBytes());
-        } catch (Exception e) {
-            if (LOGGER.isWarnEnabled()) {
-                LOGGER.warn("removeObject exception", e);
+        if (key != null) {
+            try (Jedis jedis = pool.getResource()) {
+                // return jedis.hdel(id.getBytes(), key.toString().getBytes());
+                return jedis.hdel(id, key.toString());
+            } catch (Exception e) {
+                if (LOGGER.isWarnEnabled()) {
+                    LOGGER.warn("removeObject exception", e);
+                }
             }
-            return null;
         }
+        return null;
     }
 
     @Override
     public void clear() {
         try (Jedis jedis = pool.getResource()) {
-            jedis.del(id.getBytes());
+            // jedis.del(id.getBytes());
+            jedis.del(id);
         } catch (Exception e) {
             if (LOGGER.isWarnEnabled()) {
                 LOGGER.warn("clear exception", e);
