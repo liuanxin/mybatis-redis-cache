@@ -6,7 +6,6 @@ import org.apache.ibatis.cache.CacheException;
 public final class SerializeUtil {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
     public static String jsonSerialize(Object obj) {
         if (obj == null) return null;
 
