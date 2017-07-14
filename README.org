@@ -3,8 +3,10 @@
 
   基于 mybatis 的 redis 缓存
 
+
 ** 使用
 
+引入包
 #+BEGIN_SRC xml
 <dependency>
     <groupId>com.github.liuanxin</groupId>
@@ -13,6 +15,7 @@
 </dependency>
 #+END_SRC
 
+在配置文件中设置缓存
 #+BEGIN_SRC xml
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
@@ -23,6 +26,9 @@
 </mapper>
 #+END_SRC
 
+
 ** 说明
 
-  缓存序列化使用 Jackson
+  如果有使用 spring boot, 将会自动读取 application.yml 中的 spring.redis 配置, 否则将会读取 redis.properties 文件
+
+  PS: 存入缓存的实体需要实现 java.io.Serializable 接口
