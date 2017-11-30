@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
  * <pre>
  * 基于 redis 的 mybatis 缓存. 自动从 spring 上下文中获取 RedisTemplate
  *
- * 只需要在 mapper.xml 中添加 &lt;cache type="com.github.liuanxin.caches.MybatisRedisCache" /> 即可.
+ * 只需要在 mapper.xml 中添加 &lt;cache type="com.github.liuanxin.caches.MybatisRedisCache" /&gt; 即可.
  * 前提是要将 com.github.liuanxin.caches.RedisContextUtils 放入 spring 的上下文
  *
  * &#064;Configuration
