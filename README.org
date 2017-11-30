@@ -15,6 +15,7 @@
 </dependency>
 #+END_SRC
 
+把一个类放入 spring 的上下文
 #+BEGIN_SRC java
 import com.github.liuanxin.caches.RedisContextUtils;
 
