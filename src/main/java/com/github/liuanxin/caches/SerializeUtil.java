@@ -7,9 +7,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-public final class SerializeUtil {
+final class SerializeUtil {
 
-    public static byte[] serialize(Object obj) {
+    static byte[] serialize(Object obj) {
         if (obj == null) return null;
 
         try {
@@ -21,7 +21,7 @@ public final class SerializeUtil {
         }
     }
 
-    public static Object unSerialize(byte[] bytes) {
+    static Object unSerialize(byte[] bytes) {
         if (bytes == null) return null;
 
         try {

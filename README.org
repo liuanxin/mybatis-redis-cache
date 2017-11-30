@@ -1,7 +1,7 @@
 
 ** mybatis redis 缓存
 
-  基于 mybatis 的 redis 缓存
+  基于 mybatis 的 redis 缓存, 需要 spring boot 支持.
 
 
 ** 使用
@@ -11,8 +11,20 @@
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>mybatis-redis-cache</artifactId>
-    <version>1.0.1</version>
+    <version>1.2.0</version>
 </dependency>
+#+END_SRC
+
+#+BEGIN_SRC java
+import com.github.liuanxin.caches.RedisContextUtils;
+
+@Configuration
+public class MybatisCacheConfig {
+    @Bean
+    public RedisContextUtils setupApplicationContext() {
+        return new RedisContextUtils();
+    }
+}
 #+END_SRC
 
 在配置文件中设置缓存
@@ -29,6 +41,4 @@
 
 ** 说明
 
-  如果有使用 spring boot, 将会自动读取 application.yml 中的 spring.redis 配置, 否则将会读取 redis.properties 文件
-
-  PS: 存入缓存的实体需要实现 java.io.Serializable 接口
+  存入缓存的实体需要实现 java.io.Serializable 接口

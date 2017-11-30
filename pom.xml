@@ -11,8 +11,8 @@
 
     <groupId>com.github.liuanxin</groupId>
     <artifactId>mybatis-redis-cache</artifactId>
-    <version>1.0.1</version>
-    <description>Redis cache with mybatis. use jedis client</description>
+    <version>1.2.0</version>
+    <description>Redis cache with mybatis, support with spring boot</description>
 
     <developers>
         <developer>
@@ -27,9 +27,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <mybatis.version>3.4.4</mybatis.version>
-        <jedis.version>2.9.0</jedis.version>
-        <yaml.version>1.18</yaml.version>
         <slf4j.version>1.7.25</slf4j.version>
+        <spring-boot.version>1.5.6.RELEASE</spring-boot.version>
     </properties>
 
     <dependencies>
@@ -41,21 +40,9 @@
         </dependency>
 
         <dependency>
-            <groupId>redis.clients</groupId>
-            <artifactId>jedis</artifactId>
-            <version>${jedis.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-            <version>${yaml.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+            <version>${spring-boot.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

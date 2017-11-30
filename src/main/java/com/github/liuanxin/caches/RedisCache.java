@@ -1,33 +1,49 @@
 package com.github.liuanxin.caches;
 
-
 import org.apache.ibatis.cache.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.regex.Pattern;
 
-public final class RedisCache implements Cache {
+/**
+ * <pre>
+ * 基于 redis 的 mybatis 缓存. 自动从 spring 上下文中获取 RedisTemplate
+ *
+ * 只需要在 mapper.xml 中添加 &lt;cache type="com.github.liuanxin.caches.MybatisRedisCache" /> 即可.
+ * 前提是要将 com.github.liuanxin.caches.RedisContextUtils 放入 spring 的上下文
+ *
+ * &#064;Configuration
+ * public class MybatisCacheConfig {
+ *
+ *   &#064;Bean
+ *   public com.github.liuanxin.caches.RedisContextUtils setupApplicationContext() {
+ *     return new com.github.liuanxin.caches.RedisContextUtils();
+ *   }
+ * }
+ * </pre>
+ */
+public class RedisCache implements Cache {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RedisConfigurationBuilder.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RedisCache.class);
 
-    private final ReadWriteLock readWriteLock = new DummyReadWriteLock();
+    private static final Pattern BLANK_REGEX = Pattern.compile("\\s{2,}");
+    private static final String SPACE = " ";
 
-    private String id;
+    private static RedisTemplate<Object, Object> redisTemplate;
 
-    private static JedisPool pool;
+    private final String id;
+    private final ReadWriteLock readWriteLock;
 
     public RedisCache(final String id) {
         if (id == null) {
             throw new IllegalArgumentException("Cache instances require an ID");
         }
-        this.id = id;
-
-        RedisConfig redisConfig = RedisConfigurationBuilder.CONFIG;
-        pool = new JedisPool(redisConfig, redisConfig.getHost(), redisConfig.getPort(),
-                redisConfig.getConnectionTimeout(), redisConfig.getPassword());
+        this.id = BLANK_REGEX.matcher(id).replaceAll(SPACE);
+        this.readWriteLock = new ReentrantReadWriteLock();
     }
 
     @Override
@@ -37,38 +53,29 @@ public final class RedisCache implements Cache {
 
     @Override
     public int getSize() {
-        try (Jedis jedis = pool.getResource()) {
-            return jedis.hlen(id.getBytes()).intValue();
-        } catch (Exception e) {
-            if (LOGGER.isWarnEnabled()) {
-                LOGGER.warn("getSize exception", e);
-            }
-            return 0;
-        }
+        return getRedis().opsForHash().size(id.getBytes()).intValue();
     }
 
     @Override
     public void putObject(final Object key, final Object value) {
-        if (key != null && value != null) {
-            try (Jedis jedis = pool.getResource()) {
-                jedis.hset(id.getBytes(), key.toString().getBytes(), SerializeUtil.serialize(value));
-            } catch (Exception e) {
-                if (LOGGER.isWarnEnabled()) {
-                    LOGGER.warn("putObject exception", e);
-                }
-            }
+        String keyHash = BLANK_REGEX.matcher(key.toString()).replaceAll(SPACE);
+        getRedis().opsForHash().put(id.getBytes(), keyHash.getBytes(), SerializeUtil.serialize(value));
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("put query result ({}) to cache", (id + "<>" + keyHash));
         }
     }
 
     @Override
     public Object getObject(final Object key) {
-        if (key != null) {
-            try (Jedis jedis = pool.getResource()) {
-                return SerializeUtil.unSerialize(jedis.hget(id.getBytes(), key.toString().getBytes()));
-            } catch (Exception e) {
-                if (LOGGER.isWarnEnabled()) {
-                    LOGGER.warn("getObject exception", e);
+        String keyHash = BLANK_REGEX.matcher(key.toString()).replaceAll(SPACE);
+        Object value = getRedis().opsForHash().get(id.getBytes(), keyHash.getBytes());
+        if (value != null && value instanceof byte[]) {
+            Object result = SerializeUtil.unSerialize((byte[]) value);
+            if (result != null) {
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("get query result ({}) from cache", (id + "<>" + keyHash));
                 }
+                return result;
             }
         }
         return null;
@@ -76,27 +83,19 @@ public final class RedisCache implements Cache {
 
     @Override
     public Object removeObject(final Object key) {
-        if (key != null) {
-            try (Jedis jedis = pool.getResource()) {
-                return jedis.hdel(id.getBytes(), key.toString().getBytes());
-            } catch (Exception e) {
-                if (LOGGER.isWarnEnabled()) {
-                    LOGGER.warn("removeObject exception", e);
-                }
-            }
+        String keyHash = BLANK_REGEX.matcher(key.toString()).replaceAll(SPACE);
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("remove query result ({}) from cache", (id + "<>" + keyHash));
         }
-        return null;
+        return getRedis().opsForHash().delete(id.getBytes(), (Object) keyHash.getBytes());
     }
 
     @Override
     public void clear() {
-        try (Jedis jedis = pool.getResource()) {
-            jedis.del(id.getBytes());
-        } catch (Exception e) {
-            if (LOGGER.isWarnEnabled()) {
-                LOGGER.warn("clear exception", e);
-            }
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("remove query result ({}) from cache", id);
         }
+        getRedis().opsForHash().delete(id.getBytes());
     }
 
     @Override
@@ -107,5 +106,12 @@ public final class RedisCache implements Cache {
     @Override
     public String toString() {
         return "Redis {" + id + "}";
+    }
+
+    private RedisTemplate<Object, Object> getRedis() {
+        if (redisTemplate == null) {
+            redisTemplate = RedisContextUtils.getRedisTemplate();
+        }
+        return redisTemplate;
     }
 }
