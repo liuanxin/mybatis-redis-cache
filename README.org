@@ -1,7 +1,7 @@
 
 ** mybatis redis 缓存
 
-  基于 mybatis 的 redis 缓存, 需要 spring boot 支持.
+  基于 mybatis 的 redis 缓存, 需要 spring 支持.
 
 
 ** 使用
