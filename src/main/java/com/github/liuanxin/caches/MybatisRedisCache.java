@@ -93,7 +93,7 @@ public class MybatisRedisCache implements Cache {
     @Override
     public void clear() {
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("remove query result ({}) from cache", id);
+            LOGGER.debug("clear query result ({}) from cache", id);
         }
         getRedis().opsForHash().delete(id.getBytes());
     }
