@@ -11,7 +11,7 @@
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>mybatis-redis-cache</artifactId>
-    <version>1.2.1</version>
+    <version>1.2.2</version>
 </dependency>
 #+END_SRC
 
@@ -33,7 +33,7 @@ public class MybatisCacheConfig {
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="xxx">
-    <cache type="com.github.liuanxin.caches.RedisCache" />
+    <cache type="com.github.liuanxin.caches.MybatisRedisCache" />
 
     ......
 </mapper>
