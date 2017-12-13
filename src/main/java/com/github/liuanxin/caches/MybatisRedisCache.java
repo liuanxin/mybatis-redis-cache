@@ -26,9 +26,9 @@ import java.util.regex.Pattern;
  * }
  * </pre>
  */
-public class RedisCache implements Cache {
+public class MybatisRedisCache implements Cache {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RedisCache.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MybatisRedisCache.class);
 
     private static final Pattern BLANK_REGEX = Pattern.compile("\\s{2,}");
     private static final String SPACE = " ";
@@ -38,7 +38,7 @@ public class RedisCache implements Cache {
     private final String id;
     private final ReadWriteLock readWriteLock;
 
-    public RedisCache(final String id) {
+    public MybatisRedisCache(final String id) {
         if (id == null) {
             throw new IllegalArgumentException("Cache instances require an ID");
         }
@@ -106,7 +106,7 @@ public class RedisCache implements Cache {
         RedisTemplate<Object, Object> redisTemplate = getRedis();
         if (redisTemplate != null) {
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("remove query result ({}) from cache", id);
+                LOGGER.debug("clear query result ({}) from cache", id);
             }
             redisTemplate.opsForHash().delete(id.getBytes());
         }
