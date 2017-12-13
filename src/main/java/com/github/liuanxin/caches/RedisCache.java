@@ -53,29 +53,36 @@ public class RedisCache implements Cache {
 
     @Override
     public int getSize() {
-        return getRedis().opsForHash().size(id.getBytes()).intValue();
+        RedisTemplate<Object, Object> redisTemplate = getRedis();
+        return (redisTemplate == null) ? 0 : redisTemplate.opsForHash().size(id.getBytes()).intValue();
     }
 
     @Override
     public void putObject(final Object key, final Object value) {
-        String keyHash = BLANK_REGEX.matcher(key.toString()).replaceAll(SPACE);
-        getRedis().opsForHash().put(id.getBytes(), keyHash.getBytes(), SerializeUtil.serialize(value));
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("put query result ({}) to cache", (id + "<>" + keyHash));
+        RedisTemplate<Object, Object> redisTemplate = getRedis();
+        if (redisTemplate != null) {
+            String keyHash = BLANK_REGEX.matcher(key.toString()).replaceAll(SPACE);
+            redisTemplate.opsForHash().put(id.getBytes(), keyHash.getBytes(), SerializeUtil.serialize(value));
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("put query result ({}) to cache", (id + "<>" + keyHash));
+            }
         }
     }
 
     @Override
     public Object getObject(final Object key) {
-        String keyHash = BLANK_REGEX.matcher(key.toString()).replaceAll(SPACE);
-        Object value = getRedis().opsForHash().get(id.getBytes(), keyHash.getBytes());
-        if (value != null && value instanceof byte[]) {
-            Object result = SerializeUtil.unSerialize((byte[]) value);
-            if (result != null) {
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("get query result ({}) from cache", (id + "<>" + keyHash));
+        RedisTemplate<Object, Object> redisTemplate = getRedis();
+        if (redisTemplate != null) {
+            String keyHash = BLANK_REGEX.matcher(key.toString()).replaceAll(SPACE);
+            Object value = redisTemplate.opsForHash().get(id.getBytes(), keyHash.getBytes());
+            if (value != null && value instanceof byte[]) {
+                Object result = SerializeUtil.unSerialize((byte[]) value);
+                if (result != null) {
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("get query result ({}) from cache", (id + "<>" + keyHash));
+                    }
+                    return result;
                 }
-                return result;
             }
         }
         return null;
@@ -83,19 +90,26 @@ public class RedisCache implements Cache {
 
     @Override
     public Object removeObject(final Object key) {
+        RedisTemplate<Object, Object> redisTemplate = getRedis();
+        if (redisTemplate == null) {
+            return null;
+        }
         String keyHash = BLANK_REGEX.matcher(key.toString()).replaceAll(SPACE);
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("remove query result ({}) from cache", (id + "<>" + keyHash));
         }
-        return getRedis().opsForHash().delete(id.getBytes(), (Object) keyHash.getBytes());
+        return redisTemplate.opsForHash().delete(id.getBytes(), (Object) keyHash.getBytes());
     }
 
     @Override
     public void clear() {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("remove query result ({}) from cache", id);
+        RedisTemplate<Object, Object> redisTemplate = getRedis();
+        if (redisTemplate != null) {
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("remove query result ({}) from cache", id);
+            }
+            redisTemplate.opsForHash().delete(id.getBytes());
         }
-        getRedis().opsForHash().delete(id.getBytes());
     }
 
     @Override
