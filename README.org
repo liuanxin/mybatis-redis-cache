@@ -33,6 +33,16 @@ public class MybatisCacheConfig {
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="xxx">
+    <!--
+        type : 基础缓存类型, 默认是 PerpetualCache(就是一个 HashMap)
+        flushInterval : 缓存自动刷新时间. 默认是 0
+        size : 缓存条数, 默认是 0
+        readOnly : 是否只读, 默认是 false
+        blocking : 操作时是否阻塞, 默认是 false
+        eviction : 排除算法缓存类型. 默认是 LRU, 还有 FIFO
+            LRU：Least Recently Used，最近最少使用。判断最近被使用的时间，目前最远的数据优先被淘汰
+            FIFO：First In First Out，先进先出。判断被存储的时间，离目前最远的数据优先被淘汰
+    -->
     <cache type="com.github.liuanxin.caches.MybatisRedisCache" />
 
     ......
