@@ -108,7 +108,7 @@ public class MybatisRedisCache implements Cache {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("clear query result ({}) from cache", id);
             }
-            redisTemplate.opsForHash().delete(id.getBytes());
+            redisTemplate.delete(id.getBytes());
         }
     }
 
