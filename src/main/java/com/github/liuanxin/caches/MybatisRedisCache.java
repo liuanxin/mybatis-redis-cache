@@ -59,18 +59,23 @@ public class MybatisRedisCache implements Cache {
 
     @Override
     public void putObject(final Object key, final Object value) {
-        RedisTemplate<Object, Object> redisTemplate = getRedis();
-        if (redisTemplate != null) {
-            String keyHash = BLANK_REGEX.matcher(key.toString()).replaceAll(SPACE);
-            redisTemplate.opsForHash().put(id.getBytes(), keyHash.getBytes(), SerializeUtil.serialize(value));
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("put query result ({}) to cache", (id + "<>" + keyHash));
+        if (key != null && value != null) {
+            RedisTemplate<Object, Object> redisTemplate = getRedis();
+            if (redisTemplate != null) {
+                String keyHash = BLANK_REGEX.matcher(key.toString()).replaceAll(SPACE);
+                redisTemplate.opsForHash().put(id.getBytes(), keyHash.getBytes(), SerializeUtil.serialize(value));
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("put query result ({}) to cache", (id + "<>" + keyHash));
+                }
             }
         }
     }
 
     @Override
     public Object getObject(final Object key) {
+        if (key == null) {
+            return null;
+        }
         RedisTemplate<Object, Object> redisTemplate = getRedis();
         if (redisTemplate != null) {
             String keyHash = BLANK_REGEX.matcher(key.toString()).replaceAll(SPACE);
@@ -90,6 +95,9 @@ public class MybatisRedisCache implements Cache {
 
     @Override
     public Object removeObject(final Object key) {
+        if (key == null) {
+            return null;
+        }
         RedisTemplate<Object, Object> redisTemplate = getRedis();
         if (redisTemplate == null) {
             return null;
