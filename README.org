@@ -3,7 +3,7 @@
 
 ** use redis cache in mybatis
 
-1. add package config
+1.add package config
 #+BEGIN_SRC xml
 <dependency>
     <groupId>com.github.liuanxin</groupId>
@@ -12,7 +12,7 @@
 </dependency>
 #+END_SRC
 
-2. add class in spring context
+2.add class in spring context
 #+BEGIN_SRC java
 import com.github.liuanxin.caches.RedisContextUtils;
 
@@ -25,7 +25,7 @@ public class MybatisCacheConfig {
 }
 #+END_SRC
 
-3. add config in mapper.xml
+3.add config in mapper.xml
 #+BEGIN_SRC xml
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
