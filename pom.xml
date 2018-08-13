@@ -11,8 +11,8 @@
 
     <groupId>com.github.liuanxin</groupId>
     <artifactId>mybatis-redis-cache</artifactId>
-    <version>1.2.4</version>
-    <description>Redis cache with mybatis, support with spring boot</description>
+    <version>1.2.5</version>
+    <description>Redis cache with mybatis</description>
 
     <developers>
         <developer>
@@ -22,12 +22,12 @@
     </developers>
 
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>1.7</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <mybatis.version>3.4.4</mybatis.version>
-        <spring-boot.version>1.5.6.RELEASE</spring-boot.version>
+        <spring-redis.version>1.8.6.RELEASE</spring-redis.version>
     </properties>
 
     <dependencies>
@@ -39,9 +39,9 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
-            <version>${spring-boot.version}</version>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-redis</artifactId>
+            <version>${spring-redis.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

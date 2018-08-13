@@ -3,6 +3,7 @@ package com.github.liuanxin.caches;
 import org.apache.ibatis.cache.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.concurrent.locks.ReadWriteLock;
@@ -11,16 +12,16 @@ import java.util.regex.Pattern;
 
 /**
  * <pre>
- * 基于 redis 的 mybatis 缓存. 自动从 spring 上下文中获取 RedisTemplate
+ * usr redis cache in mybatis, use RedisTemplate in spring context
  *
- * 只需要在 mapper.xml 中添加 &lt;cache type="com.github.liuanxin.caches.MybatisRedisCache" /&gt; 即可.
- * 前提是要将 com.github.liuanxin.caches.RedisContextUtils 放入 spring 的上下文
+ * 1. add com.github.liuanxin.caches.RedisContextUtils in spring context
+ * 2. add &lt;cache type="com.github.liuanxin.caches.MybatisRedisCache" /&gt; in mapper.xml.
  *
  * &#064;Configuration
  * public class MybatisCacheConfig {
  *
  *   &#064;Bean
- *   public com.github.liuanxin.caches.RedisContextUtils setupApplicationContext() {
+ *   public com.github.liuanxin.caches.RedisContextUtils setupCacheContext() {
  *     return new com.github.liuanxin.caches.RedisContextUtils();
  *   }
  * }
@@ -54,7 +55,17 @@ public class MybatisRedisCache implements Cache {
     @Override
     public int getSize() {
         RedisTemplate<Object, Object> redisTemplate = getRedis();
-        return (redisTemplate == null) ? 0 : redisTemplate.opsForHash().size(id.getBytes()).intValue();
+        if (redisTemplate == null) {
+            return 0;
+        }
+        try {
+            return redisTemplate.opsForHash().size(id.getBytes()).intValue();
+        } catch (RedisConnectionFailureException e) {
+            if (LOGGER.isWarnEnabled()) {
+                LOGGER.warn("getSize() --> connection redis error");
+            }
+            return 0;
+        }
     }
 
     @Override
@@ -63,9 +74,15 @@ public class MybatisRedisCache implements Cache {
             RedisTemplate<Object, Object> redisTemplate = getRedis();
             if (redisTemplate != null) {
                 String keyHash = BLANK_REGEX.matcher(key.toString()).replaceAll(SPACE);
-                redisTemplate.opsForHash().put(id.getBytes(), keyHash.getBytes(), SerializeUtil.serialize(value));
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("put query result ({}) to cache", (id + "<>" + keyHash));
+                try {
+                    redisTemplate.opsForHash().put(id.getBytes(), keyHash.getBytes(), SerializeUtil.serialize(value));
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("put query result ({}) to cache", (id + "<>" + keyHash));
+                    }
+                } catch (RedisConnectionFailureException e) {
+                    if (LOGGER.isWarnEnabled()) {
+                        LOGGER.warn("putObject() --> connection redis error");
+                    }
                 }
             }
         }
@@ -79,14 +96,20 @@ public class MybatisRedisCache implements Cache {
         RedisTemplate<Object, Object> redisTemplate = getRedis();
         if (redisTemplate != null) {
             String keyHash = BLANK_REGEX.matcher(key.toString()).replaceAll(SPACE);
-            Object value = redisTemplate.opsForHash().get(id.getBytes(), keyHash.getBytes());
-            if (value != null && value instanceof byte[]) {
-                Object result = SerializeUtil.unSerialize((byte[]) value);
-                if (result != null) {
-                    if (LOGGER.isDebugEnabled()) {
-                        LOGGER.debug("get query result ({}) from cache", (id + "<>" + keyHash));
+            try {
+                Object value = redisTemplate.opsForHash().get(id.getBytes(), keyHash.getBytes());
+                if (value != null && value instanceof byte[]) {
+                    Object result = SerializeUtil.unSerialize((byte[]) value);
+                    if (result != null) {
+                        if (LOGGER.isDebugEnabled()) {
+                            LOGGER.debug("get query result ({}) from cache", (id + "<>" + keyHash));
+                        }
+                        return result;
                     }
-                    return result;
+                }
+            } catch (RedisConnectionFailureException e) {
+                if (LOGGER.isWarnEnabled()) {
+                    LOGGER.warn("getObject() --> connection redis error");
                 }
             }
         }
@@ -103,10 +126,18 @@ public class MybatisRedisCache implements Cache {
             return null;
         }
         String keyHash = BLANK_REGEX.matcher(key.toString()).replaceAll(SPACE);
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("remove query result ({}) from cache", (id + "<>" + keyHash));
+        try {
+            Object obj = redisTemplate.opsForHash().delete(id.getBytes(), (Object) keyHash.getBytes());
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("remove query result ({}) from cache", (id + "<>" + keyHash));
+            }
+            return obj;
+        } catch (RedisConnectionFailureException e) {
+            if (LOGGER.isWarnEnabled()) {
+                LOGGER.warn("removeObject() --> connection redis error");
+            }
+            return null;
         }
-        return redisTemplate.opsForHash().delete(id.getBytes(), (Object) keyHash.getBytes());
     }
 
     @Override
@@ -116,7 +147,13 @@ public class MybatisRedisCache implements Cache {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("clear query result ({}) from cache", id);
             }
-            redisTemplate.delete(id.getBytes());
+            try {
+                redisTemplate.delete(id.getBytes());
+            } catch (RedisConnectionFailureException e) {
+                if (LOGGER.isWarnEnabled()) {
+                    LOGGER.warn("clear() --> connection redis error");
+                }
+            }
         }
     }
 

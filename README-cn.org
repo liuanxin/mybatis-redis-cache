@@ -1,0 +1,51 @@
+
+** mybatis redis 缓存
+
+1. 引入包
+#+BEGIN_SRC xml
+<dependency>
+    <groupId>com.github.liuanxin</groupId>
+    <artifactId>mybatis-redis-cache</artifactId>
+    <version>1.2.5</version>
+</dependency>
+#+END_SRC
+
+2. 把一个类放入 spring 的上下文
+#+BEGIN_SRC java
+import com.github.liuanxin.caches.RedisContextUtils;
+
+@Configuration
+public class MybatisCacheConfig {
+    @Bean
+    public RedisContextUtils setupCacheContext() {
+        return new RedisContextUtils();
+    }
+}
+#+END_SRC
+
+3. 在配置文件中设置缓存
+#+BEGIN_SRC xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xxx">
+    <!--
+        type : 基础缓存类型, 默认是 PerpetualCache(就是一个 HashMap)
+        flushInterval : 缓存刷新间隔. 单位: 毫秒. 默认情况是不设置, 也就是没有刷新间隔, 缓存仅仅调用语句时刷新
+        size : 缓存条数, 默认是 1024
+        readOnly : 是否只读, 默认是 false
+        blocking : 操作时是否阻塞, 默认是 false
+        eviction : 排除算法缓存类型. 默认是 LRU, 还有 FIFO
+            LRU   Least Recently Used 最近最少使用的: 移除最长时间不被使用的对象
+            FIFO  First In First Out 先进先出: 按对象进入缓存的顺序来移除它们
+            SOFT  软引用: 移除基于垃圾回收器状态和软引用规则的对象
+            WEAK  弱引用: 更积极地移除基于垃圾收集器状态和弱引用规则的对象
+    -->
+    <cache type="com.github.liuanxin.caches.MybatisRedisCache" />
+
+    ......
+</mapper>
+#+END_SRC
+
+或者在持久层标 @CacheNamespace(implementation = MybatisRedisCache.class) 注解
+
+存入缓存的实体需要实现 java.io.Serializable 接口
