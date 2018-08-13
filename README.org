@@ -1,6 +1,8 @@
 
 ** use redis cache in mybatis
 
+[[中文说明][README-cn.org]]
+
 1. add package config
 #+BEGIN_SRC xml
 <dependency>
