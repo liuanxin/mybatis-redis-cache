@@ -1,7 +1,7 @@
 
 ** mybatis redis 缓存
 
-1. 引入包
+1.引入包
 #+BEGIN_SRC xml
 <dependency>
     <groupId>com.github.liuanxin</groupId>
@@ -10,7 +10,7 @@
 </dependency>
 #+END_SRC
 
-2. 把一个类放入 spring 的上下文
+2.把一个类放入 spring 的上下文
 #+BEGIN_SRC java
 import com.github.liuanxin.caches.RedisContextUtils;
 
@@ -23,7 +23,7 @@ public class MybatisCacheConfig {
 }
 #+END_SRC
 
-3. 在配置文件中设置缓存
+3.在配置文件中设置缓存
 #+BEGIN_SRC xml
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
