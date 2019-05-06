@@ -56,4 +56,4 @@ public class MybatisCacheConfig {
 
 或者在持久层标 @CacheNamespace(implementation = MybatisRedisCache.class) 注解
 
-存入缓存的实体需要实现 java.io.Serializable 接口
+*存入缓存的实体需要实现 java.io.Serializable 接口*
