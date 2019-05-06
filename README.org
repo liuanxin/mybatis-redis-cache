@@ -48,4 +48,4 @@ public class MybatisCacheConfig {
 
 or @CacheNamespace(implementation = MybatisRedisCache.class) in Repository class
 
-add in cache model need implements java.io.Serializable
+*add in cache model need implements java.io.Serializable*
