@@ -42,7 +42,7 @@ public class MybatisCacheConfig {
         size : 缓存条数, 默认是 1024
         readOnly : 是否只读, 默认是 false
         blocking : 操作时是否阻塞, 默认是 false
-        eviction : 排除算法缓存类型. 默认是 LRU, 还有 FIFO
+        eviction : 排除算法缓存类型. 默认是 LRU
             LRU   Least Recently Used 最近最少使用的: 移除最长时间不被使用的对象
             FIFO  First In First Out 先进先出: 按对象进入缓存的顺序来移除它们
             SOFT  软引用: 移除基于垃圾回收器状态和软引用规则的对象
