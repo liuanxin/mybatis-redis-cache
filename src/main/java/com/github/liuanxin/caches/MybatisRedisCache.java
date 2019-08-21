@@ -75,7 +75,7 @@ public class MybatisRedisCache implements Cache {
                 return redisTemplate.opsForHash().size(id.getBytes()).intValue();
             } catch (RedisConnectionFailureException e) {
                 if (LOGGER.isWarnEnabled()) {
-                    LOGGER.warn(e.getMessage());
+                    LOGGER.warn("Redis Connection Failure", e);
                 }
             }
         }
@@ -97,7 +97,7 @@ public class MybatisRedisCache implements Cache {
                     }
                 } catch (RedisConnectionFailureException e) {
                     if (LOGGER.isWarnEnabled()) {
-                        LOGGER.warn(e.getMessage());
+                        LOGGER.warn("Redis Connection Failure", e);
                     }
                 }
             }
@@ -128,7 +128,7 @@ public class MybatisRedisCache implements Cache {
                     }
                 } catch (RedisConnectionFailureException e) {
                     if (LOGGER.isWarnEnabled()) {
-                        LOGGER.warn(e.getMessage());
+                        LOGGER.warn("Redis Connection Failure", e);
                     }
                 }
             }
@@ -151,7 +151,7 @@ public class MybatisRedisCache implements Cache {
                     return obj;
                 } catch (RedisConnectionFailureException e) {
                     if (LOGGER.isWarnEnabled()) {
-                        LOGGER.warn(e.getMessage());
+                        LOGGER.warn("Redis Connection Failure", e);
                     }
                 }
             }
@@ -170,7 +170,7 @@ public class MybatisRedisCache implements Cache {
                 redisTemplate.delete(id.getBytes());
             } catch (RedisConnectionFailureException e) {
                 if (LOGGER.isWarnEnabled()) {
-                    LOGGER.warn(e.getMessage());
+                    LOGGER.warn("Redis Connection Failure", e);
                 }
             }
         }
