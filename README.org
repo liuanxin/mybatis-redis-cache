@@ -1,5 +1,5 @@
 
-[[README-cn.org][中文说明]]
+[[README-CN.org][中文说明]]
 
 ** use redis cache in mybatis
 
@@ -8,7 +8,7 @@
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>mybatis-redis-cache</artifactId>
-    <version>1.2.6</version>
+    <version>1.2.7</version>
 </dependency>
 #+END_SRC
 
