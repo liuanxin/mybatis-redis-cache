@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.data.redis.core.RedisTemplate;
 
-import java.util.Arrays;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Pattern;
@@ -37,8 +36,6 @@ public class MybatisRedisCache implements Cache {
     private static final Pattern BLANK_REGEX = Pattern.compile("\\s{2,}");
     private static final String BLANK = " ";
 
-    private static final byte[] NIL_CACHE = "".getBytes();
-
     private static RedisTemplate<Object, Object> redisTemplate;
 
 
@@ -49,11 +46,11 @@ public class MybatisRedisCache implements Cache {
         if (id == null) {
             throw new IllegalArgumentException("Cache instances require an ID");
         }
-        this.id = handleBlank(id);
+        this.id = keyCompact(id);
         this.readWriteLock = new ReentrantReadWriteLock();
     }
 
-    private String handleBlank(String str) {
+    private String keyCompact(String str) {
         // <multi space> replace to <one space>
         // <, >          replace to <,>
         String s = str;
@@ -84,14 +81,12 @@ public class MybatisRedisCache implements Cache {
 
     @Override
     public void putObject(final Object key, final Object value) {
-        if (key != null) {
+        if (key != null && value != null) {
             RedisTemplate<Object, Object> redisTemplate = getRedis();
             if (redisTemplate != null) {
-                String k = handleBlank(key.toString());
+                String k = keyCompact(key.toString());
                 try {
-                    // avoid cache penetration
-                    byte[] v = (value == null) ? NIL_CACHE : JdkSerializer.serialize(value);
-                    redisTemplate.opsForHash().put(id.getBytes(), k.getBytes(), v);
+                    redisTemplate.opsForHash().put(id.getBytes(), k.getBytes(), JdkSerializer.serialize(value));
                     if (LOGGER.isDebugEnabled()) {
                         LOGGER.debug("put query result ({}) to cache", (id + "<>" + k));
                     }
@@ -109,16 +104,11 @@ public class MybatisRedisCache implements Cache {
         if (key != null) {
             RedisTemplate<Object, Object> redisTemplate = getRedis();
             if (redisTemplate != null) {
-                String k = handleBlank(key.toString());
+                String k = keyCompact(key.toString());
                 try {
                     Object value = redisTemplate.opsForHash().get(id.getBytes(), k.getBytes());
                     if (value instanceof byte[]) {
-                        byte[] bytes = (byte[]) value;
-                        // avoid cache penetration
-                        if (Arrays.equals(NIL_CACHE , bytes)) {
-                            return null;
-                        }
-                        Object result = JdkSerializer.unSerialize(bytes);
+                        Object result = JdkSerializer.unSerialize((byte[]) value);
                         if (result != null) {
                             if (LOGGER.isDebugEnabled()) {
                                 LOGGER.debug("get query result ({}) from cache", (id + "<>" + k));
@@ -142,7 +132,7 @@ public class MybatisRedisCache implements Cache {
         if (key != null) {
             RedisTemplate<Object, Object> redisTemplate = getRedis();
             if (redisTemplate != null) {
-                String k = handleBlank(key.toString());
+                String k = keyCompact(key.toString());
                 try {
                     Object obj = redisTemplate.opsForHash().delete(id.getBytes(), (Object) k.getBytes());
                     if (LOGGER.isDebugEnabled()) {
